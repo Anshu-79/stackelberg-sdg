@@ -1,0 +1,5 @@
+base: ../default.yaml
+game: {rho: 0.6, sigma: 0.3}
+leader: {differentiate_through_followers: true}
+fictitious_play: {inner_steps_per_epoch: 3, beta: 0.5}
+training: {epochs: 200, out_dir: runs/systemic_shock}

@@ -1,0 +1,6 @@
+base: ../default.yaml
+game: {n_banks: 50}
+banks: {mode: shared, hidden: 64}
+fictitious_play: {inner_steps_per_epoch: 5, beta: 0.5, shared_active_banks: 8}
+exploitability: {n_eval_banks: 5}
+training: {epochs: 300, batch_size: 128, eval_every: 25, log_every: 25, out_dir: runs/shared_n50}
