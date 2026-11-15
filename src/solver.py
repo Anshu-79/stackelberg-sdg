@@ -102,17 +102,50 @@ class StackelbergSolver:
                               eval_batch=ec.eval_batch, fresh=ec.fresh if fresh is None else fresh,
                               detach_mean=True)
 
+    def eval_reg_loss(self, batch=4096, seed=99):
+        """Leader objective J_reg of the current (alpha, banks) on common random numbers."""
+        gen = torch.Generator(device=self.dyn.device).manual_seed(seed)
+        with torch.no_grad():
+            return simulate(self.dyn, self.obj, self.regulator, lambda t, X, m, a: self.banks(t, X, m, a),
+                            batch, generator=gen)["reg_loss"].item()
+
+    def settle_followers(self, epochs):
+        """Freeze the regulator and let followers re-equilibrate selfishly via DFP."""
+        self.opp.load_state_dict(self.banks.state_dict())
+        for _ in range(epochs):
+            for idx in self._bank_schedule():
+                self.bank_step(idx)
+
     def diagnostics(self, **kw):
         return rollout_diagnostics(self.dyn, self.obj, self.regulator, self.banks, **kw)
 
     # ---------------- training ----------------
-    def train(self, log=print):
+    def coopt_step(self):
+        """Ablation: naive co-optimisation. Regulator and ALL banks descend one joint team loss
+        L = J_reg - mean_i J_i with nothing detached (no Stackelberg / Nash structure)."""
+        opts = [self.opt_reg, *self.opt_banks]
+        for o in opts:
+            o.zero_grad(set_to_none=True)
+        out = simulate(self.dyn, self.obj, self.regulator, lambda t, X, m, a: self.banks(t, X, m, a),
+                       self.batch, leader_grad=True, detach_mean=False)
+        (out["reg_loss"] - out["payoffs"].mean()).backward()
+        for o in opts:
+            o.step()
+        return out["reg_loss"].item(), out["payoffs"].mean().item()
+
+    def train_epoch(self):
         tc, fp = self.cfg.training, self.cfg.fictitious_play
+        if tc.get("mode", "dfp") == "coopt":
+            return self.coopt_step()
+        for _ in range(fp.inner_steps_per_epoch):
+            for idx in self._bank_schedule():
+                self.bank_step(idx)
+        return self.leader_step()
+
+    def train(self, log=print):
+        tc = self.cfg.training
         for epoch in range(1, tc.epochs + 1):
-            for _ in range(fp.inner_steps_per_epoch):
-                for idx in self._bank_schedule():
-                    self.bank_step(idx)
-            reg_loss, avg_payoff = self.leader_step()
+            reg_loss, avg_payoff = self.train_epoch()
             self.history.append({"epoch": epoch, "reg_loss": reg_loss, "avg_bank_payoff": avg_payoff})
             msg = None
             if epoch % tc.log_every == 0 or epoch == tc.epochs:

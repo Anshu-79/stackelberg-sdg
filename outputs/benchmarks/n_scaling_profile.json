@@ -1,0 +1,74 @@
+[
+  {
+    "time_per_epoch": 0.2394708270000289,
+    "n_params": 12490,
+    "peak_rss_mb": 694.2734375,
+    "rss_base_mb": 541.31640625,
+    "peak_cuda_mb": null,
+    "mode": "independent",
+    "N": 10
+  },
+  {
+    "time_per_epoch": 0.9082045426666431,
+    "n_params": 31225,
+    "peak_rss_mb": 695.42578125,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "independent",
+    "N": 25
+  },
+  {
+    "time_per_epoch": 3.2626556046666715,
+    "n_params": 62450,
+    "peak_rss_mb": 698.30078125,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "independent",
+    "N": 50
+  },
+  {
+    "time_per_epoch": 11.167304516666642,
+    "n_params": 124900,
+    "peak_rss_mb": 703.83984375,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "independent",
+    "N": 100
+  },
+  {
+    "time_per_epoch": 0.03008800033330772,
+    "n_params": 1249,
+    "peak_rss_mb": 694.66796875,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "shared",
+    "N": 10
+  },
+  {
+    "time_per_epoch": 0.038326818333340874,
+    "n_params": 1249,
+    "peak_rss_mb": 695.08203125,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "shared",
+    "N": 25
+  },
+  {
+    "time_per_epoch": 0.0463204620000397,
+    "n_params": 1249,
+    "peak_rss_mb": 696.390625,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "shared",
+    "N": 50
+  },
+  {
+    "time_per_epoch": 0.07169846966667137,
+    "n_params": 1249,
+    "peak_rss_mb": 698.92578125,
+    "rss_base_mb": 541.44140625,
+    "peak_cuda_mb": null,
+    "mode": "shared",
+    "N": 100
+  }
+]

@@ -1,0 +1,4 @@
+# Team-fallacy ablation: regulator + all banks minimise J_reg - mean_i J_i jointly (nothing detached).
+# Exploitability is still measured with the Nash best-response metric -> it should NOT vanish.
+base: ../default.yaml
+training: {mode: coopt, epochs: 100, eval_every: 10, out_dir: outputs/ablation_coopt, reference_dir: outputs/baseline, settle_epochs: 100}

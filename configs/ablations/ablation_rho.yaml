@@ -1,0 +1,5 @@
+# python scripts/train.py --config configs/ablations/ablation_rho.yaml --sweep
+base: ../default.yaml
+training: {epochs: 60, eval_every: 15, out_dir: "outputs/ablation_rho/rho_{game.rho}"}
+sweep: {game.rho: [0.0, 0.3, 0.6, 0.9]}
+sweep_out_dir: "outputs/ablation_rho/rho_{game.rho}"

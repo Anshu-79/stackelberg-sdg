@@ -1,5 +1,5 @@
 # Exact hyperparameters of ICORSI.ipynb
-game: {n_banks: 10, T: 1.0, n_steps: 20, kappa: 0.5, sigma: 0.2, rho: 0.0, x0_std: 0.5}
+game: {n_banks: 10, T: 1.0, n_steps: 20, kappa: 0.5, sigma: 0.2, rho: 0.0, x0_std: 0.5, shock_time: null, shock_rho: 0.0}
 dynamics: {name: interbank_ou}
 objectives: {name: icorsi, c_alpha: 0.1, c_phi: 2.0, c_dev: 0.2, c_g: 0.5, lev: 1.0}
 regulator: {name: mlp, hidden: 32, depth: 2, activation: relu, lr: 1.0e-3, alpha_min: 0.0, alpha_max: 1.0}
@@ -19,4 +19,4 @@ fictitious_play:
   shared_active_banks: 4                   # simultaneous deviators per step in shared mode
   bsde_weight: 0.1                         # weight of terminal BSDE residual (bsde_adjoint)
 exploitability: {n_eval_banks: 3, k_br: 50, lr: 1.0e-3, eval_batch: 2048, fresh: false}
-training: {epochs: 50, batch_size: 64, log_every: 10, eval_every: 10, seed: 0, device: cpu, out_dir: runs/default}
+training: {mode: dfp, epochs: 50, batch_size: 64, log_every: 10, eval_every: 10, seed: 0, device: cpu, out_dir: outputs/baseline}  # mode: dfp | coopt

@@ -67,4 +67,18 @@ def rollout_diagnostics(dyn, obj, regulator, policy, batch=2048, seed=0, detach_
         "symmetry_dispersion_u": U_bank.std().item(),
         "symmetry_dispersion_payoff": out["payoffs"].std().item(),
         "reg_loss": out["reg_loss"].item(),
+        "var_XT": out["X_T"].var(dim=1).mean().item(), "mean_XT": out["X_T"].mean().item(),
     }
+
+
+def collect_paths(dyn, obj, regulator, policy, batch=512, seed=0, detach_mean=True):
+    """Roll out and return numpy arrays: t[S], mean_paths/var_paths/alpha_paths[S,B], X_full/U_full[S,B,N], X_T[B,N]."""
+    gen = torch.Generator(device=dyn.device).manual_seed(seed)
+    fn = lambda t, X, m, a: policy(t, X, m, a)
+    with torch.no_grad():
+        out = simulate(dyn, obj, regulator, fn, batch, generator=gen, record=True, detach_mean=detach_mean)
+    P = {k: out["rec"][k].cpu().numpy() for k in ("mean_paths", "var_paths", "alpha_paths", "X_full", "U_full")}
+    P["t"] = [k * dyn.dt for k in range(dyn.n_steps)]
+    P["t"] = __import__("numpy").array(P["t"])
+    P["X_T"] = out["X_T"].cpu().numpy()
+    return P

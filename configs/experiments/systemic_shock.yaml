@@ -1,5 +1,8 @@
+# Stress test: policies are trained at rho=0 (game.rho); at t = shock_time the common-noise
+# correlation jumps to shock_rho (see scripts/run_stress_test.py).
 base: ../default.yaml
-game: {rho: 0.6, sigma: 0.3}
+game: {sigma: 0.3}
 leader: {differentiate_through_followers: true}
 fictitious_play: {inner_steps_per_epoch: 3, beta: 0.5}
-training: {epochs: 200, out_dir: runs/systemic_shock}
+stress: {shock_time: 0.5, shock_rho: 0.8, n_paths: 4096, seed: 11}
+training: {epochs: 100, eval_every: 50, out_dir: outputs/stress_test}

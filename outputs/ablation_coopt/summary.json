@@ -1,0 +1,12 @@
+{
+  "final_exploitability": 0.03177964687347412,
+  "final_reg_loss": 0.1950208842754364,
+  "var_XT": 0.034365542232990265,
+  "mean_XT": 1.379642128944397,
+  "osc_reg": 0.021243621982935043,
+  "osc_expl": 0.019624351523816586,
+  "train_seconds": 49.1429705619812,
+  "reg_loss_coopt": 0.17762285470962524,
+  "reg_loss_after_followers_settle": 0.3398994207382202,
+  "stackelberg_gap": 0.16227656602859497
+}

@@ -1,0 +1,58 @@
+banks:
+  activation: relu
+  depth: 2
+  hidden: 32
+  lr: 0.001
+  mode: independent
+  share_parameters: false
+dynamics:
+  name: interbank_ou
+exploitability:
+  eval_batch: 2048
+  fresh: false
+  k_br: 50
+  lr: 0.001
+  n_eval_banks: 3
+fictitious_play:
+  beta: 1.0
+  bsde_weight: 0.1
+  inner_steps_per_epoch: 1
+  shared_active_banks: 4
+game:
+  T: 1.0
+  kappa: 0.5
+  n_banks: 10
+  n_steps: 20
+  rho: 0.6
+  shock_rho: 0.0
+  shock_time: null
+  sigma: 0.2
+  x0_std: 0.5
+leader:
+  detach_mean: true
+  differentiate_through_followers: false
+objectives:
+  c_alpha: 0.1
+  c_dev: 0.2
+  c_g: 0.5
+  c_phi: 2.0
+  lev: 1.0
+  name: icorsi
+regulator:
+  activation: relu
+  alpha_max: 1.0
+  alpha_min: 0.0
+  depth: 2
+  hidden: 32
+  lr: 0.001
+  name: mlp
+sweep_out_dir: outputs/ablation_rho/rho_{game.rho}
+training:
+  batch_size: 64
+  device: cpu
+  epochs: 60
+  eval_every: 15
+  log_every: 10
+  mode: dfp
+  out_dir: outputs/ablation_rho/rho_0.6
+  seed: 0

@@ -43,6 +43,9 @@ def _load_raw(path: Path) -> dict:
     return raw
 
 
+ALIASES = {"training.beta": "fictitious_play.beta"}   # short aliases accepted on the CLI
+
+
 def apply_overrides(d: dict, overrides) -> dict:
     """overrides: iterable of 'a.b.c=value' (value parsed as YAML)."""
     d = copy.deepcopy(d)
@@ -51,7 +54,7 @@ def apply_overrides(d: dict, overrides) -> dict:
         if not sep:
             raise ValueError(f"Override must look like a.b=c, got '{ov}'")
         node = d
-        parts = key.strip().split(".")
+        parts = ALIASES.get(key.strip(), key.strip()).split(".")
         for p in parts[:-1]:
             node = node.setdefault(p, {})
         v = yaml.safe_load(val)

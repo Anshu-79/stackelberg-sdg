@@ -1,0 +1,7 @@
+# Single run:  python scripts/train.py --config <this> --override training.beta=0.2
+# Full grid:   python scripts/train.py --config <this> --sweep
+base: ../default.yaml
+fictitious_play: {beta: 0.5, inner_steps_per_epoch: 1}
+training: {epochs: 60, eval_every: 20, out_dir: "outputs/ablation_beta_{fictitious_play.beta}"}
+sweep: {fictitious_play.beta: [0.2, 0.5, 0.9], fictitious_play.inner_steps_per_epoch: [1, 3, 5]}
+sweep_out_dir: "outputs/ablation_hyperparams/beta_{fictitious_play.beta}_inner_{fictitious_play.inner_steps_per_epoch}"

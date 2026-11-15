@@ -11,9 +11,10 @@ from .registry import DYNAMICS
 @DYNAMICS.register("interbank_ou")
 class InterbankOU:
     def __init__(self, n_banks=10, T=1.0, n_steps=20, kappa=0.5, sigma=0.2,
-                 rho=0.0, x0_std=0.5, device="cpu"):
+                 rho=0.0, x0_std=0.5, shock_time=None, shock_rho=0.0, device="cpu"):
         assert n_banks >= 2, "Var(X_t) across banks requires n_banks >= 2"
-        assert 0.0 <= rho <= 1.0
+        assert 0.0 <= rho <= 1.0 and 0.0 <= shock_rho <= 1.0
+        self.shock_time, self.shock_rho = shock_time, shock_rho   # optional contagion regime switch
         self.n_banks, self.T, self.n_steps = n_banks, T, n_steps
         self.kappa, self.sigma, self.rho, self.x0_std = kappa, sigma, rho, x0_std
         self.dt = T / n_steps
@@ -27,7 +28,7 @@ class InterbankOU:
         so the RNG stream matches the original notebook."""
         s = math.sqrt(self.dt)
         dWi = torch.randn(batch, self.n_banks, generator=generator, device=self.device) * s
-        if self.rho > 0:
+        if max(self.rho, self.shock_rho if self.shock_time is not None else 0.0) > 0:
             dW0 = torch.randn(batch, 1, generator=generator, device=self.device) * s
         else:
             dW0 = torch.zeros(batch, 1, device=self.device)
@@ -39,8 +40,14 @@ class InterbankOU:
     def diffusion(self, t, X):
         return self.sigma
 
-    def step(self, X, drift, dW0, dWi):
-        dW = self.rho * dW0 + math.sqrt(1.0 - self.rho ** 2) * dWi
+    def rho_at(self, t=None):
+        if self.shock_time is not None and t is not None and t >= self.shock_time - 1e-9:
+            return self.shock_rho
+        return self.rho
+
+    def step(self, X, drift, dW0, dWi, t=None):
+        rho = self.rho_at(t)
+        dW = rho * dW0 + math.sqrt(1.0 - rho ** 2) * dWi
         return X + drift * self.dt + self.diffusion(None, X) * dW
 
 
@@ -59,7 +66,8 @@ def simulate(dyn, obj, regulator, bank_fn, batch, *, y0=None, leader_grad=False,
     reg_run = X.new_zeros(())
     rewards = X.new_zeros(batch, N)
     Y = y0.view(1, N).expand(batch, N) if y0 is not None else None
-    rec = {k: [] for k in ("mean_X", "var_X", "alpha", "U", "drift_mean", "drift_std")} if record else None
+    rec = {k: [] for k in ("mean_X", "var_X", "alpha", "U", "drift_mean", "drift_std",
+                                   "X_full", "U_full", "alpha_paths", "mean_paths", "var_paths")} if record else None
     used_bsde = False
 
     for k in range(dyn.n_steps):
@@ -86,7 +94,10 @@ def simulate(dyn, obj, regulator, bank_fn, batch, *, y0=None, leader_grad=False,
             rec["mean_X"].append(mean_X.mean().detach()); rec["var_X"].append(var_X.mean().detach())
             rec["alpha"].append(alpha.mean().detach()); rec["U"].append(U.mean(0).detach())
             rec["drift_mean"].append(drift.mean().detach()); rec["drift_std"].append(drift.std().detach())
-        X = dyn.step(X, drift, dW0, dWi)
+            rec["X_full"].append(X.detach()); rec["U_full"].append(U.detach())
+            rec["alpha_paths"].append(alpha.detach().squeeze(-1))
+            rec["mean_paths"].append(mean_X.detach().squeeze(-1)); rec["var_paths"].append(var_X.detach().squeeze(-1))
+        X = dyn.step(X, drift, dW0, dWi, t=k * dt)
 
     g = obj.bank_terminal(X)
     return {

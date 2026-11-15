@@ -1,0 +1,35 @@
+{
+  "rho_shock": 0.8,
+  "shock_time": 0.5,
+  "n_paths": 4096,
+  "var_x": {
+    "baseline_T": 0.12852247059345245,
+    "shock_T": 0.10703888535499573,
+    "ratio_shock_over_baseline": 0.8328418135643005
+  },
+  "std_mean": {
+    "baseline_T": 0.20368990302085876,
+    "shock_T": 0.25809165835380554,
+    "ratio_shock_over_baseline": 1.2670812606811523
+  },
+  "q05_mean": {
+    "baseline_T": 0.6914037466049194,
+    "shock_T": 0.6130604147911072,
+    "ratio_shock_over_baseline": 0.8866894841194153
+  },
+  "worst_bank": {
+    "baseline_T": 0.481040358543396,
+    "shock_T": 0.5318220853805542,
+    "ratio_shock_over_baseline": 1.1055665016174316
+  },
+  "alpha": {
+    "baseline_T": 0.06765590608119965,
+    "shock_T": 0.06859844923019409,
+    "ratio_shock_over_baseline": 1.013931393623352
+  },
+  "mean_x": {
+    "baseline_T": 1.0295984745025635,
+    "shock_T": 1.031324028968811,
+    "ratio_shock_over_baseline": 1.0016759634017944
+  }
+}

@@ -1,0 +1,4 @@
+base: default.yaml
+scaling: {n_values: [10, 25, 50, 100], modes: [independent, shared], bench_epochs: 3}
+mc: {batches: [64, 256, 1024, 4096], reps: 50, ref_batch: 262144, chunk: 32768, train_epochs: 30, seed: 7}
+training: {eval_every: 0, out_dir: outputs/benchmarks}
